@@ -1,31 +1,30 @@
 // Jared Furlong
 // CISC 187 - Spring 2017
-// Program Assignment - Chapter 18 Stacks
-// 4/18/17
+// Program Assignment - Chapter 18 Queues
+// 4/25/17
 
-// This program uses custom classes to create a dynamic stack of integers with basic math functions.
+// This program uses a custom class to create a dynamic queue of names, with the option to add a name to the front.
 // A menu is used to access all of the member functions.
 
 #include <iostream>
 #include <sstream>
-#include "DynMathStack.h"
+#include "DynStrQueue.h"
+#include <string>
 using namespace std;
 
 // Function Prototypes
 int getInt();
+string getStr(int);
 int menu();
-void push(DynMathStack &);
-void pop(DynMathStack &);
-void add(DynMathStack &);
-void subtract(DynMathStack &);
-void multiply(DynMathStack &);
-void divide(DynMathStack &);
-void display(DynMathStack &);
+void enqueue(DynStrQueue &);
+void dequeue(DynStrQueue &);
+void makeFront(DynStrQueue &);
+void display(DynStrQueue &);
 
 int main()
 {
 	int choice;
-	DynMathStack stack;
+	DynStrQueue list;
 	
 	do
 	{
@@ -35,47 +34,32 @@ int main()
 		// Switch to choosen menu option.
 		switch (choice)
 		{
-		case 1:		// Push # onto stack
+		case 1:		// Enqueue a string.
 
-			push(stack);
+			enqueue(list);
 			break;
 
-		case 2:		// Pop # off of stack
+		case 2:		// Dequeue a string.
 
-			pop(stack);
+			dequeue(list);
 			break;
 
-		case 3:		// Sum  of top 2 values
+		case 3:		// Add a string to the front of the queue.
 
-			add(stack);
-			break;
-
-		case 4:		// Difference of top 2 values
-
-			subtract(stack);
+			makeFront(list);
 			break;
 		
-		case 5:		// Product of top 2 values
+		case 4:		// Display the list
 
-			multiply(stack);
-			break;
-
-		case 6:		// Quotient of top 2 values
-
-			divide(stack);
+			display(list);
 			break;
 		
-		case 7:		// Display the list
-
-			display(stack);
-			break;
-		
-		case 8:		// Exit the menu.
+		case 5:		// Exit the menu.
 
 			cout << "Thank you for using my program!";
 			break;
 		}
-	} while (choice != 8);
+	} while (choice != 5);
 
 	system("pause>nul");
 	return 0;
@@ -102,10 +86,36 @@ int getInt()
 		stringstream stream(input);
 		if (stream >> number)
 		{
-				return number;
+			return number;
 		}
 
 		cout << "Invalid integer, please try again: ";
+	}
+}
+
+/**********************************************************************
+Function: getStr
+Purpose: Prompts user to enter a string. Validates for not empty and
+		 less than a max size.
+Parameters: int
+Returns: string
+**********************************************************************/
+
+string getStr(int max)
+{
+	int number;
+	string input;
+
+	while (true)
+	{
+		getline(cin, input);
+
+		if (input.length() != 0 && input.length() <= max)
+		{
+				return input;
+		}
+
+		cout << "Invalid input, please enter between 1 and " << max << " characters: ";
 	}
 }
 
@@ -122,21 +132,18 @@ int menu()
 
 	// Display the menu and store user's choice.
 	cout << "Choose an action to perform:\n"
-		<< "1. Push\n"
-		<< "2. Pop\n"
-		<< "3. Add\n"
-		<< "4. Subtract\n"
-		<< "5. Multiply\n"
-		<< "6. Divide\n"
-		<< "7. Display\n"
-		<< "8. Exit\n\n"
-		<< "Enter your choice (1-8): ";
+		<< "1. Add a name to the end of the list.\n"
+		<< "2. Let one person into the club.\n"
+		<< "3. Add a name to the front of the list.\n"
+		<< "4. Display the list of names.\n"
+		<< "5. Exit.\n\n"
+		<< "Enter your choice (1-5): ";
 	choice = getInt();
 
 	// Validate the menu choice.
-	while (choice < 1 || choice > 8)
+	while (choice < 1 || choice > 5)
 	{
-		cout << "Please enter a valid choice (1-8): ";
+		cout << "Please enter a valid choice (1-5): ";
 		choice = getInt();
 	}
 
@@ -145,138 +152,73 @@ int menu()
 }
 
 /**********************************************************************
-Function: push
-Purpose: Gets an integer to push onto the stack.
-Parameters: DynMathStack
+Function: enqueue
+Purpose: Gets a name and adds it to the end of the list.
+Parameters: DynStrQueue
 Returns: none
 **********************************************************************/
 
-void push(DynMathStack &stack)
+void enqueue(DynStrQueue &list)
 {
-	int number;
+	string name;
 
-	cout << "Integer to push onto the stack: ";
-	number = getInt();
+	cout << "Name to add to the end of the list: ";
+	name = getStr(15);
 
-	stack.push(number);
-	cout << number << " has been pushed to the stack.\n\n";
+	list.enqueue(name);
+	cout << name << " has been added to the end of the list.\n\n";
 }
 
 /**********************************************************************
-Function: pop
-Purpose: Pops the top number off the stack.
-Parameters: DynMathStack
+Function: dequeue
+Purpose: Removes a name from the front of the list.
+Parameters: DynStrQue
 Returns: none
 **********************************************************************/
 
-void pop(DynMathStack &stack)
-{
-	int number, error;
-
-	error = stack.pop(number);
-
-	if (error == -1)
-		cout << "Stack is empty, can not pop.\n\n";
-	else
-	{
-		cout << number << " has been popped off of the stack.\n\n";
-	}
-}
-
-/**********************************************************************
-Function: add
-Purpose: Sums the top two values of the stack.
-Parameters: DynMathStack
-Returns: none
-**********************************************************************/
-
-void add(DynMathStack &stack)
+void dequeue(DynStrQueue &list)
 {
 	int error;
+	string name;
 
-	error = stack.add();
+	error = list.dequeue(name);
 
 	if (error == -1)
-		cout << "Can not sum, less than 2 integers on the stack.\n\n";
+		cout << "List is empty.\n\n";
 	else
 	{
-		cout <<"The first 2 integers on the stack have been replaced by their sum.\n\n";
+		cout << name << " has been removed from the front of the list.\n\n";
 	}
 }
 
 /**********************************************************************
-Function: subtract
-Purpose: Subtacts the top two values of the stack.
-Parameters: DynMathStack
+Function: makeFront
+Purpose: Gets a name and adds it to the front of the list.
+Parameters: DynStrQueue
 Returns: none
 **********************************************************************/
 
-void subtract(DynMathStack &stack)
+void makeFront(DynStrQueue &list)
 {
-	int error;
+	string name;
 
-	error = stack.sub();
+	cout << "Name to add to the front of the list: ";
+	name = getStr(15);
 
-	if (error == -1)
-		cout << "Can not subtract, less than 2 integers on the stack.\n\n";
-	else
-	{
-		cout << "The first 2 integers on the stack have been replaced by their difference.\n\n";
-	}
-}
-
-/**********************************************************************
-Function: multiply
-Purpose: Sums the top two values of the stack.
-Parameters: DynMathStack
-Returns: none
-**********************************************************************/
-
-void multiply(DynMathStack &stack)
-{
-	int error;
-
-	error = stack.mult();
-
-	if (error == -1)
-		cout << "Can not multiply, less than 2 integers on the stack.\n\n";
-	else
-	{
-		cout << "The first 2 integers on the stack have been replaced by their product.\n\n";
-	}
-}
-
-/**********************************************************************
-Function: divide
-Purpose: Sums the top two values of the stack.
-Parameters: DynMathStack
-Returns: none
-**********************************************************************/
-
-void divide(DynMathStack &stack)
-{
-	int error;
-
-	error = stack.div();
-
-	if (error == -1)
-		cout << "Can not divide, less than 2 integers on the stack or divide by 0.\n\n";
-	else
-	{
-		cout << "The first 2 integers on the stack have been replaced by their quotient.\n\n";
-	}
+	list.makeFront(name);
+	cout << name << " has been added to the front of the list.\n\n";
 }
 
 /**********************************************************************
 Function: display
-Purpose: Displays all of the numbers on the stack.
-Parameters: DynMathStack
+Purpose: Displays all of the names in the list.
+Parameters: DynStrQueue
 Returns: none
 **********************************************************************/
 
-void display(DynMathStack &stack)
+void display(DynStrQueue &list)
 {
-	cout << "Here are the contents of the stack:\n";
-	stack.display();
+	cout << "Here are the contents of the list:\n";
+	list.display();
 	cout << endl;
 }
